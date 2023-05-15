@@ -3,7 +3,7 @@
 {% block content %}
 <div align="center" class="container">
 <h1 align="center"> Product Page</h1>
-<h3> Welcome to our website </h3>
+<h3>{{ foo('Welcome to our website') }}</h3>
 <table>
   <thead>
     <tr>
@@ -35,8 +35,47 @@
   </div>
 </form>
 <input class="btn btn-primary" type="submit" value="Submit">
+
 <br />
-Result: <output id="result" name="sumresult"></output>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Product Name &nbsp;&nbsp;</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for value in max %}
+   <tr>
+    
+       <td> {{ value["product_name"] }} </td> 
+       <td> {{ value["Max_price"] }} </td>
+   </tr>
+  {% endfor %}
+  </tbody>
+</table>
 <br />
+<table>
+  <thead>
+    <tr>
+      <th>Product Name &nbsp;&nbsp;</th>
+      <th>Category Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for value in prod_cat %}
+   <tr>
+    
+       <td> {{ value["product_name"] }} </td> 
+       <td> {{ value["category_name"] }} </td>
+   </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<br />
+<input class="btn btn-primary" type="submit" value="Submit">
+</div>
 
 {%endblock%}

@@ -1,2 +1,1 @@
-# pep-project1
-MD, Justin, Payton
+# team_project_grocery_store_api

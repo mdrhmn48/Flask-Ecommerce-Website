@@ -20,7 +20,6 @@ def get_products(category):
                 where category_name = "{category}"'''
     db_cursor.execute(stmt)
     result_set = db_cursor.fetchall()
-    print(result_set)
     for row in result_set: 
         row_dict = {
             "name" : row[0],
@@ -173,15 +172,10 @@ def get_reviews_by_pop():
 def delete_user(email):
     if (not isinstance(email, str)):
         raise ValueError("Email is not a string")
-    print(email)
-           
-    stmt = f'''SET FOREIGN_KEY_CHECKS=0;'''
-    db_cursor.execute(stmt)
-    stmt = '''DELETE FROM customers
-    WHERE email = '{email}'
+    stmt = f'''
+    DELETE FROM customers
+    WHERE email = '{email}';
     '''
-    db_cursor.execute(stmt)
-    stmt = '''SET FOREIGN_KEY_CHECKS=1;'''
     db_cursor.execute(stmt)
     my_connection.commit()
 

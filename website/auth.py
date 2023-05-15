@@ -2,22 +2,21 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from product_database import my_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
-from product_database import get_products, get_product_categories
 
 currentUser = ""
 auth = Blueprint("auth", __name__)
 
 db_cursor = my_connection.cursor(buffered=True)
-user = db_cursor.execute("""select email from customers""")
+db_cursor.execute("""select email from customers""")
 user = db_cursor.fetchall()
 out = [item for t in user for item in t]      
-# print(out)
+print(out)
 
 
-password = db_cursor.execute("""select customer_pass from customers""")
+db_cursor.execute("""select customer_pass from customers""")
 password = db_cursor.fetchall()
 passwordd = [item for t in password for item in t]      
-# print(passwordd)
+print(passwordd)
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
@@ -47,35 +46,7 @@ def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
-@auth.route("/product", methods= ["GET", "POST"])
-# @login_required
-def product():
-    product = request.form.get("product")
-    print(product)
-    quantity = request.form.get("quantity")
-    if request.method == 'POST':
-        if request.form['product'] == 'Rice' or "Cereals":
-            print("Helllo")
-        elif request.form['product'] == 'Quinoa':
-            print("Quinoa")
-            
-        else:
-            pass # unknown
-    # for product in result_set:
-    #     print(product)
-    #     # return redirect(url_for('home.submit')) 
-    # else:
-    #     pass
-
-
-
-
-    return render_template("product.html", title = 'Product Page', result=get_products("Grains"), prod_cat=get_product_categories(), currentUser=current_user)
-
-
-
-
-@auth.route("/sign-up", methods=["GET", "POST"])
+@auth.route("/sign-up")
 def sign_up():
     if request.method == "POST":
         email = request.form.get("email")
@@ -83,8 +54,6 @@ def sign_up():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
         if email in out:
-            # global currentUser
-            # currentUser = email
             flash("Email already exist!", category="error")
         elif len(email)<4:
             flash("Email Must be greater than 3 characters", category="error")
@@ -95,9 +64,9 @@ def sign_up():
         elif len(password1)<7:
             flash("Password too short. Must be greater than 6 characters", category="error")
         else:
-            new_user = db_cursor.execute('''INSERT INTO customers(email,first_name,customer_pass) VALUES(%s,%s,%s)''',(email,firstName,password1))
+            new_user = db_cursor.execute('''INSERT INTO customers(email,first_name,password) VALUES(%s,%s,%s)''',(email,firstName,password1))
             my_connection.commit()
-            # login_user(email, remember=True)
+            login_user(new_user, remember=True)
             flash("Account is created successfully", category="success")
             # login_user(user, remember=True)
             return redirect(url_for('views.home'))
