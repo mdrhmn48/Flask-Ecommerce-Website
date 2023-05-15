@@ -1,1 +1,2 @@
-# team_project_grocery_store_api
+# pep-project1
+MD, Justin, Payton
