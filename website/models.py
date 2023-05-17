@@ -1,4 +1,4 @@
-from product_database import *
+from database_source_files.product_database import *
 
 db_curser = my_connection.cursor()
 
