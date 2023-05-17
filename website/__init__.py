@@ -13,7 +13,7 @@ def create_app():
 
     from .views import views
     from .auth import auth
-    from product_database import my_connection
+    from database_source_files.product_database import my_connection
 
     db_cursor = my_connection.cursor(buffered=True)
 
