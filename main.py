@@ -16,8 +16,8 @@ while True:
     
     choice = int(input("Please select an option?"))
     if choice == 1:
-            # store.create_account()
-            pass
+            store.create_account()
+            # pass
     elif choice == 2:
             store.view_account()
             pass
