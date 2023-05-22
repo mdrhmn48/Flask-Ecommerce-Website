@@ -66,15 +66,15 @@ def update_account():
     while True:
         email=input("Which email would you like to update?: ")
         db_cursor.execute("""select email from customers""")
-        email_db = db_cursor.fetchall()
-        print(email_db)
-        email_db = [item for t in email_db for item in t] 
-        print(email_db)
+        email_input = db_cursor.fetchall()
+        print(f"email_input: {email_input}")
+        email_db = [item for t in email_input for item in t] 
+        print(f"email_db: {email_db}")
         db_cursor.execute("""select customer_pass from customers""")
         password = db_cursor.fetchall()
-        print(password)
+        print(f"password = {password}")
         password_db = [item for t in password for item in t]
-        print(password_db)  
+        print(f"password_db = {password_db}")  
         if email in email_db:
             while True:
                 password= input("What is your passowrd? ")
@@ -89,8 +89,18 @@ def update_account():
                         else:
                             print(f"You picked {update_acc}")
                             # enter the new information
-                            new_update = input("Enter your {update_acc}")
-                            db_curser.execute("""select customers set {}""")
+                            new_update = input(f"Enter your new {update_acc}: ")
+                            print(f"input: {new_update}")
+                            if update_acc == 'email':
+                                old_email = email_db[0]
+                                sql_statement = f"Update customers set email = '{new_update}' where email = '{old_email}'"
+                                db_curser.execute(f"""{sql_statement}""")
+                                my_connection.commit()
+                            if update_acc == 'password':
+                                old_password = password_db[0]
+                                sql_statement = f"Update customers set customer_pass = '{new_update}' where customer_pass = '{old_password}'"
+                                db_curser.execute(f"""{sql_statement}""")
+                                my_connection.commit()
                             return
                 else:
                     print("Wrong Password! Try Again")
@@ -131,7 +141,6 @@ def delete_account():
         else:
             print("Email do not exist!")
       
-    
             
 def buy():
     pass
