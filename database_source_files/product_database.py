@@ -56,19 +56,21 @@ def buy_product(email, product_name, quantity_taken):
     my_connection.commit()
     update_quantity(quantity_taken, product_name)
 
-def create_user(email, first_name, password):
-    if (not isinstance(email, str)):
-        raise ValueError("Email is not a string")
+def create_user(first_name, email, password):
     if (not isinstance(first_name, str)):
         raise ValueError("First_name is not a string")
+    if (not isinstance(email, str)):
+        raise ValueError("Email is not a string")
     if (not isinstance(password, str)):
         raise ValueError("Password is not a string")
     stmt = f'''
-    INSERT into customers(email, first_name, customer_pass)
-        values("{email}", "{first_name}", "{password}")
-    '''
+    INSERT into customers(first_name, email, customer_pass)
+        values("{first_name}", "{email}", "{password}")
+        '''
     db_cursor.execute(stmt)
     my_connection.commit()
+    print(f"First Name: {first_name}")
+    print(f"Email: {email}")
 
 def view_owned_products(email):
     if (not isinstance(email, str)):

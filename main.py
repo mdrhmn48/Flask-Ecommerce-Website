@@ -16,13 +16,13 @@ while True:
     
     choice = int(input("Please select an option?"))
     if choice == 1:
-            # store.create_account()
-            pass
+            store.create_account()
+            # pass
     elif choice == 2:
             store.view_account()
             pass
     elif choice == 3:
-            # store.update_account()
+            store.update_account()
             pass
     elif choice == 4:
             store.delete_account()
@@ -39,8 +39,7 @@ while True:
 
 # store.create_account()
 #store.read_account()
-# store.delete_account()
-
+# store.delete_account()=
 
 if __name__== "__main__":
     app.run(debug=True)
