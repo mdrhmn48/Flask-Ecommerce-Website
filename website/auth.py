@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, session, request, flash, redirect, url_for
 from database_source_files.product_database import my_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
@@ -23,11 +23,15 @@ def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
+        print(email)
+        print(password)
         
         if email in out:
             global currentUser
             currentUser = email
-            if password in passwordd:
+            index = out.index(email)
+            hashed_password = passwordd[index]
+            if check_password_hash(hashed_password, password):
             # if check_password_hash(passwordd, password):
                 # email = email.split("")
                 flash(f"{currentUser} logged in successfully!", category="success")
@@ -43,10 +47,11 @@ def login():
 @auth.route("/logout")
 @login_required
 def logout():
+    session.pop('username', None)
     logout_user()
     return redirect(url_for("auth.login"))
 
-@auth.route("/sign-up")
+@auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
         email = request.form.get("email")
@@ -64,10 +69,10 @@ def sign_up():
         elif len(password1)<7:
             flash("Password too short. Must be greater than 6 characters", category="error")
         else:
-            new_user = db_cursor.execute('''INSERT INTO customers(email,first_name,password) VALUES(%s,%s,%s)''',(email,firstName,password1))
+            new_user = db_cursor.execute('''INSERT INTO customers(email,first_name,customer_pass) VALUES(%s,%s,%s)''',(email,firstName,password1))
             my_connection.commit()
-            login_user(new_user, remember=True)
+            #login_user(new_user, remember=True)
             flash("Account is created successfully", category="success")
-            # login_user(user, remember=True)
+            #login_user(user, remember=True)
             return redirect(url_for('views.home'))
     return render_template("sign_up.html", currentUser= current_user)

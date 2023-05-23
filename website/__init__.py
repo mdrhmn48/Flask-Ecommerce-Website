@@ -5,7 +5,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 
 def create_app():
-    app = Flask(__name__)
+    # app = Flask(__name__)
     app.config['SESSION_TYPE'] = 'memcached'
     app.config['SECRET_KEY'] = 'super secret key'
     #sess = Session()
@@ -29,3 +29,7 @@ def create_app():
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
     return app
+
+
+if __name__== "__main__":
+    app.run(debug=True)
