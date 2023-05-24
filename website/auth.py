@@ -7,42 +7,44 @@ currentUser = ""
 auth = Blueprint("auth", __name__)
 
 db_cursor = my_connection.cursor(buffered=True)
-db_cursor.execute("""select email from customers""")
-user = db_cursor.fetchall()
-out = [item for t in user for item in t]      
-print(out)
-
-
-db_cursor.execute("""select customer_pass from customers""")
-password = db_cursor.fetchall()
-passwordd = [item for t in password for item in t]      
-print(passwordd)
-
+db_cursor.execute("""SELECT email, customer_pass FROM customers""")
+user_rows = db_cursor.fetchall()
+user_dict = {row[0].lower(): row[1] for row in user_rows}
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    db_cursor.execute("""SELECT email, customer_pass FROM customers""")
+    user_rows = db_cursor.fetchall()
+    user_dict = {row[0].lower(): row[1] for row in user_rows}
+
+    print("Emails in database:", user_dict)
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        print(email)
-        print(password)
-        
-        if email in out:
-            global currentUser
-            currentUser = email
-            index = out.index(email)
-            hashed_password = passwordd[index]
+
+        print(f"Input email: {email}")
+        print(f"Input password: {password}")
+        print("User dictionary:", user_dict)
+       
+
+        if email.lower() in user_dict:
+            hashed_password = user_dict[email.lower()]
+
             if check_password_hash(hashed_password, password):
-            # if check_password_hash(passwordd, password):
-                # email = email.split("")
+                global currentUser
+                currentUser = email
                 flash(f"{currentUser} logged in successfully!", category="success")
-                # login_user(user, remember=True)
                 login_user(current_user, remember=True)
                 return redirect(url_for('views.home'))  
             else:
                 flash("Incorrect Password. Try again!", category="error")
+                print(f"Input password: {password}")
+                print(f"Hashed password from database: {hashed_password}")
         else:
-            flash("Email does not Exist!", category="error")
-    return render_template("login.html", currentUser= current_user)
+            flash("Email does not exist!", category="error")
+            print(f"Input email: {email}")
+            print("Emails in database:", user_dict)
+    return render_template("login.html", currentUser=current_user)
+
 
 @auth.route("/logout")
 @login_required
@@ -58,21 +60,25 @@ def sign_up():
         firstName = request.form.get("firstName")
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
-        if email in out:
-            flash("Email already exist!", category="error")
-        elif len(email)<4:
-            flash("Email Must be greater than 3 characters", category="error")
-        elif len(firstName)<2:
-            flash("First name Must be greater than 1 character", category="error")
+        if email in user_dict:
+            flash("Email already exists!", category="error")
+        elif len(email) < 4:
+            flash("Email must be greater than 3 characters", category="error")
+        elif len(firstName) < 2:
+            flash("First name must be greater than 1 character", category="error")
         elif password1 != password2:
-            flash("Password don't match", category="error")
-        elif len(password1)<7:
+            flash("Passwords don't match", category="error")
+        elif len(password1) < 7:
             flash("Password too short. Must be greater than 6 characters", category="error")
         else:
-            new_user = db_cursor.execute('''INSERT INTO customers(email,first_name,customer_pass) VALUES(%s,%s,%s)''',(email,firstName,password1))
+            hashed_password = generate_password_hash(password1)
+            db_cursor.execute("INSERT INTO customers(email, first_name, customer_pass) VALUES (%s, %s, %s)", (email, firstName, hashed_password))
             my_connection.commit()
-            #login_user(new_user, remember=True)
-            flash("Account is created successfully", category="success")
-            #login_user(user, remember=True)
+            # db_cursor.execute("""SELECT email, customer_pass FROM customers""")
+            # db_cursor.fetchall()
+            
+
+            # print("Emails in databasess:", user_dict)
+            flash("Account created successfully", category="success")
             return redirect(url_for('views.home'))
-    return render_template("sign_up.html", currentUser= current_user)
+    return render_template("sign_up.html", currentUser=current_user)
