@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, session, request, flash, redirect,
 from database_source_files.product_database import my_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import UserMixin, LoginManager
+
 
 currentUser = ""
 auth = Blueprint("auth", __name__)
@@ -10,6 +12,12 @@ db_cursor = my_connection.cursor(buffered=True)
 db_cursor.execute("""SELECT email, customer_pass FROM customers""")
 user_rows = db_cursor.fetchall()
 user_dict = {row[0].lower(): row[1] for row in user_rows}
+
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+
+
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     db_cursor.execute("""SELECT email, customer_pass FROM customers""")
@@ -33,7 +41,13 @@ def login():
                 global currentUser
                 currentUser = email
                 flash(f"{currentUser} logged in successfully!", category="success")
-                login_user(current_user, remember=True)
+
+                user = UserMixin()
+                user.id = email  # Set the user ID
+                login_user(user, remember=True)
+
+
+                #login_user(current_user, remember=True)
                 return redirect(url_for('views.home'))  
             else:
                 flash("Incorrect Password. Try again!", category="error")

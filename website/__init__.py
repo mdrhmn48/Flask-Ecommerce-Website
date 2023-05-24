@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin
 
 
 app = Flask(__name__)
@@ -23,7 +23,15 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(currentUser):
-        return db_cursor.execute(""""Select email from customers """)
+        currentUser = db_cursor.execute("SELECT email FROM customers WHERE email = %s", (currentUser,))
+        result = db_cursor.fetchone()
+        if result:
+        # Create a User object with the user ID (email)
+            currentUser = UserMixin()
+            currentUser.id = result[0]
+            return currentUser
+        else:
+            return None
          
 
     app.register_blueprint(views, url_prefix="/")
