@@ -16,6 +16,7 @@ def create_account():
             print(create_user(first_name, email, password))
             print("Account created")
         # print(create_user())
+        
 def view_account():
     while True:
         view_account = input("Would you like to view your account? Y/N: ")
@@ -42,7 +43,7 @@ def view_account():
           
         if email in email_db:
             while True:
-                password= input("What is your passowrd? ")
+                password= input("What is your password? ")
                 # if password in password_db:
                 if password in password_db:
                         print(f"Your email: {email}")
@@ -129,7 +130,7 @@ def delete_account():
         print(password_db)  
         if email in email_db:
             while True:
-                password= input("What is your passowrd? ")
+                password= input("What is your password? ")
                 # if password in password_db:
                 if password in password_db:
                         delete_user(email)
@@ -143,6 +144,41 @@ def delete_account():
       
             
 def buy():
-    pass
+    email=input("Enter the email address for your account: ")
+    db_cursor.execute(f"""select email from customers where email = '{email}'""")
+    email_input = db_cursor.fetchall()
+    print(f"email_input: {email_input}")
+    email_db = [item for t in email_input for item in t] 
+    print(f"email_db: {email_db}")
+    password=input("Enter the password for your account: ")
+    db_cursor.execute(f"""select customer_pass from customers where customer_pass = '{password}'""")
+    password_input = db_cursor.fetchall()
+    print(f"password = {password_input}")
+    password_db = [item for t in password_input for item in t]
+    print(f"password_db = {password_db}")
+
+    if email in email_db:
+        print("\n------------------------------")
+        print("\nList of available products")
+        print("\n------------------------------")
+        product_list = get_all_products()
+        for x in range(len(product_list)):
+            print(product_list[x])
+        print("\n------------------------------")
+        product_id=input("Enter selection number of the product you wish to purchase: ")
+        product_id=int(product_id)
+        db_cursor.execute(f"""Select product_name from products WHERE product_id = '{product_id}'""")
+        product_pick = db_cursor.fetchall()
+        product_selection = str(product_pick[0][0])
+        print(f"You have selected {product_selection}")
+        quantity_taken = input(f"Enter quantity of {product_selection}: ")
+        quantity_taken=int(quantity_taken)
+        db_cursor.execute(f'''Select product_price from products WHERE product_id = "{product_id}"''')
+        product_price = db_cursor.fetchall()
+        unit_price = float(product_price[0][0])
+        buy_product(email=email, product_id=product_id, quantity_taken=quantity_taken, unit_price=unit_price)
+        print(f"You have successfully purchased {product_selection}, quantity: {quantity_taken}, unit_price: {unit_price}")
+    else:
+        print("Account email does not exist")
 def review():
     pass

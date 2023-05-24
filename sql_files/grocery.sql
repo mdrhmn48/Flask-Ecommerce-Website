@@ -52,10 +52,10 @@ create table customer_product_review
 
 create table customer_products
 (
-	customer_id int,
+	order_id int primary key auto_increment,
+    customer_id int,
     product_id int,
-    primary key(customer_id, product_id),
-    foreign key (customer_id) references Customers(customer_id)
+    foreign key (customer_id) references customers(customer_id)
     ON DELETE CASCADE,
     foreign key (product_id) references Products(product_id)
     ON DELETE CASCADE
