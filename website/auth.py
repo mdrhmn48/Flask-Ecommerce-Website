@@ -101,6 +101,6 @@ def sign_up():
 @auth.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    #session.pop('username', None)
-    #showProfile()
+    currentUser = current_user
+    flash(f"{currentUser} logged in successfully!", category="success")
     return render_template("profile.html", currentUser=current_user)

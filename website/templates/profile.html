@@ -4,45 +4,19 @@
 {% block content %}
 <form method = "POST">
     <h3 align="center"> My Profile</h3>
-    <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email"
-        class="form-control"
-        id="email"
-        name="email"
-        placeholder="Enter Email"
-        />
-    </div>
-
-    <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="text"
-        class="form-control"
-        id="firstName"
-        name="firstName"
-        placeholder="Enter Your First Name"
-        />
-    </div>
-
-    <div class="form-group">
-        <label for=""password1>Password</label>
-        <input type="password"
-        class="form-control"
-        id="password1"
-        name="password1"
-        placeholder="Enter password"
-        />
-    </div>
-    <div class="form-group">
-        <label for=""password2> Confirm Password</label>
-        <input type="password"
-        class="form-control"
-        id="password2"
-        name="password2"
-        placeholder="Confirm password"
-        />
-    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        <input type="text" class="form-control" value="{{ currentUser }}">
+                    </div>
+                </div>
+                
     <br />
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
 {% endblock %}
