@@ -96,3 +96,11 @@ def sign_up():
             flash("Account created successfully", category="success")
             return redirect(url_for('views.home'))
     return render_template("sign_up.html", currentUser=current_user)
+
+
+@auth.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    #session.pop('username', None)
+    #showProfile()
+    return render_template("profile.html", currentUser=current_user)

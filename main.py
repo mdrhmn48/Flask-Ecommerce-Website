@@ -14,27 +14,27 @@ app = create_app()
 #     print("\n------------------------------")
 
  
-    choice = int(input("Please select an option?" ))
-    if choice == 1:
-            store.create_account()
-            # pass
-    elif choice == 2:
-            store.view_account()
-            # pass
-    elif choice == 3:
-            store.update_account()
-            pass
-    elif choice == 4:
-            store.delete_account()
-    elif choice == 5:
-            store.buy()
-            # pass
-    elif choice == 6:
-            # store.review()
-            pass
-    else:
-            print("Thank you for visiting")
-            break    
+    # choice = int(input("Please select an option?" ))
+    # if choice == 1:
+    #         store.create_account()
+    #         # pass
+    # elif choice == 2:
+    #         store.view_account()
+    #         # pass
+    # elif choice == 3:
+    #         store.update_account()
+    #         pass
+    # elif choice == 4:
+    #         store.delete_account()
+    # elif choice == 5:
+    #         store.buy()
+    #         # pass
+    # elif choice == 6:
+    #         # store.review()
+    #         pass
+    # else:
+    #         print("Thank you for visiting")
+    #         break    
 
 # store.create_account()
 #store.read_account()
