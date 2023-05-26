@@ -1,41 +1,47 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
+
 {% block title %} Home {% endblock %}
 
 {% block content %}
 <div align="center" class="container">
-<h1 align="center">{{currentUser.first_name}} Welcome to Market Mania</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Product ID &nbsp;&nbsp;</th>
-      <th>Product Name&nbsp;&nbsp;</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Category ID</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for row in result %}
-    <tr>
-        <td> {{ row[0] }} </td> 
-        <td> {{ row[1] }} </td> 
-        <td> {{ row[2] }} </td>
-        <td> {{ row[3] }} </td>
-        <td> {{ row[4] }} </td> 
-   </tr>
-  {% endfor %}
-  </tbody>
-</table>
-<br />
-<form>
-  <div class="form-group">
-    <label for="formGroupExampleInput">What do you like to Buy? Select a product.</label>
-    <input type="text" class="form-control" id="product" placeholder="Write a product">
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput2">Quantity</label>
-    <input type="text" class="form-control" id="quantity" placeholder="Quantity">
-  </div>
-</form>
-<input class="btn btn-primary" type="submit" value="Submit">
-{%endblock%}
+    <h1 align="center">{{ currentUser.email }} Welcome to Market Mania</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Category ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in result %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <form method="POST">
+        <div class="form-group">
+            <label for="product">What do you like to Buy? Select a product.</label>
+            <input type="text" class="form-control" id="product" name="product" placeholder="Write a product" required>
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Quantity" required>
+        </div>
+        <div class="form-group">
+          <label>Total Price</label>
+          <div>{{ total_price | default('') }}</div>
+      </div>
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}
