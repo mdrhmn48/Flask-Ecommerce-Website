@@ -22,26 +22,21 @@ def home():
         print(f"prod_name: {product_id }, {quantity}")
         product = get_product_from_database(product_id)
         print("product: ",product)
-        if product in result:
-            total_price = product[3] * quantity
-            print(total_price)
-            
-            # flash(f"{currentUser}Order Placed Successfully Total: {total_price}", category="success")
-            update_order_in_database(product_id)
-            flash(f"{current_user_email} logged in successfully!", category="success")
-            flash(f"{current_user_email} Order Placed Successfully, Your Total: {total_price}", category="success")
-            return render_template("home.html", currentUser=current_user_email, result=result, total_price=total_price) 
+        if product:
+            if quantity > 0 and product[2] >= quantity:
+                total_price = product[3] * quantity
+                update_order_in_database(product_id)
+                flash(f"{current_user_email} Order Placed Successfully! Your Total: {total_price}", category="success")
+            else:
+                flash(f"We are out of stock on {product[1]}! Try a different quantity.", category="error")
         else:
-            flash("invalid product selected! Try Again", category="error")
-
+            flash("Invalid product selected! Try again.", category="error")
 
     return render_template("home.html", currentUser=current_user_email, result=result)
 
 # ... other code ...
 def get_product_from_database(product_id):
-    # Implement this function to retrieve the product details from the database
-    # based on the product_id
-    # Example code:
+   
     db_query = "SELECT * FROM products WHERE product_id = %s"
     db_cursor.execute(db_query, (product_id,))
     product = db_cursor.fetchone()
