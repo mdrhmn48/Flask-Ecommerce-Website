@@ -9,33 +9,31 @@ from flask_login import UserMixin, LoginManager
 currentUser = ""
 auth = Blueprint("auth", __name__)
 
-db_connection = my_connection
+
 db_cursor = my_connection.cursor(buffered=True)
 db_cursor.execute("""SELECT email, customer_pass FROM customers""")
 user_rows = db_cursor.fetchall()
 user_dict = {row[0].lower(): row[1] for row in user_rows}
 
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
 
 class User(UserMixin):
-    def __init__(self, user_id):
+    def __init__(self, user_id, first_name):
         self.id = user_id
+        self.first_name = first_name
 
 
-@login_manager.user_loader
+# @login_manager.user_loader
 def load_user(user_id):
-    db_cursor = db_connection.cursor(buffered=True)
-    db_cursor.execute("SELECT email FROM customers WHERE email = %s", (user_id,))
+    db_cursor =my_connection.cursor(buffered=True)
+    db_cursor.execute("SELECT email, first_name FROM customers WHERE email = %s", (user_id,))
     result = db_cursor.fetchone()
-    print("user_id: ", result[0])
+    print("user_id: ", result[0], result[1])
     db_cursor.close()
     if result:
-        return User(result[0])
+        return User(result[0], result[1])
     else:
         return None
-    
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
@@ -51,7 +49,7 @@ def login():
         if result:
             hashed_password = result[1]
             if check_password_hash(hashed_password, password):
-                user = User(result[0])
+                user = User(result[0], result[1])
                 login_user(user, remember=True)
                 flash(f"{current_user.id} logged in successfully!", category="success")
                 session["email"] = email
@@ -90,11 +88,7 @@ def sign_up():
             hashed_password = generate_password_hash(password1)
             db_cursor.execute("INSERT INTO customers(email, first_name, customer_pass) VALUES (%s, %s, %s)", (email, firstName, hashed_password)),
             my_connection.commit()
-            # db_cursor.execute("""SELECT email, customer_pass FROM customers""")
-            # db_cursor.fetchall()
             
-
-            # print("Emails in databasess:", user_dict)
             flash("Account created successfully", category="success")
             return redirect(url_for('views.home'))
     return render_template("sign_up.html", currentUser=current_user)

@@ -5,31 +5,32 @@ from database_source_files.product_database import my_connection
 
 
 from .views import views
-from .auth import auth
+from .auth import auth, User, load_user
 
 db_connection = my_connection
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
-
 class User(UserMixin):
-    def __init__(self, user_id):
+    def __init__(self, user_id, first_name):
         self.id = user_id
+        self.first_name = first_name
 
 
 @login_manager.user_loader
 def load_user(user_id):
     db_cursor = db_connection.cursor(buffered=True)
-    db_cursor.execute("SELECT email FROM customers WHERE email = %s", (user_id,))
+    db_cursor.execute("SELECT email, first_name FROM customers WHERE email = %s", (user_id,))
     result = db_cursor.fetchone()
-    print("user_id: ", result[0])
+    print("user_id: ", result[0], result[1])
     db_cursor.close()
     if result:
-        return User(result[0])
+        return User(result[0], result[1])
     else:
         return None
-    
+
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'super secret key'

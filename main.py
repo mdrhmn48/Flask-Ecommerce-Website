@@ -1,4 +1,4 @@
-from website import create_app
+from website.app import create_app
 from website import models as store
 
 app = create_app()
