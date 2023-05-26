@@ -18,20 +18,21 @@ user_dict = {row[0].lower(): row[1] for row in user_rows}
 
 
 class User(UserMixin):
-    def __init__(self, user_id, first_name):
+    def __init__(self, user_id, first_name, customer_id):
         self.id = user_id
         self.first_name = first_name
+        self.customer_id = customer_id
 
 
 # @login_manager.user_loader
 def load_user(user_id):
     db_cursor =my_connection.cursor(buffered=True)
-    db_cursor.execute("SELECT email, first_name FROM customers WHERE email = %s", (user_id,))
+    db_cursor.execute("SELECT email, first_name, customer_id FROM customers WHERE email = %s", (user_id,))
     result = db_cursor.fetchone()
-    print("user_id: ", result[0], result[1])
+    print("user_id: ", result[0], result[1], result[2])
     db_cursor.close()
     if result:
-        return User(result[0], result[1])
+        return User(result[0], result[1], result[2])
     else:
         return None
 
@@ -42,14 +43,14 @@ def login():
         password = request.form.get("password")
 
         # db_cursor = db_connection.cursor(buffered=True)
-        db_cursor.execute("SELECT email, customer_pass FROM customers WHERE email = %s", (email,))
+        db_cursor.execute("SELECT email, customer_pass, customer_id FROM customers WHERE email = %s", (email,))
         result = db_cursor.fetchone()
         # db_cursor.close()
 
         if result:
             hashed_password = result[1]
             if check_password_hash(hashed_password, password):
-                user = User(result[0], result[1])
+                user = User(result[0], result[1], result[2])
                 login_user(user, remember=True)
                 flash(f"{current_user.id} logged in successfully!", category="success")
                 session["email"] = email

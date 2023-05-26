@@ -9,13 +9,30 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-sm-3">
+                        <h6 class="mb-0">Customer ID</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        <input type="text" class="form-control" value="{{ current_user.customer_id }}">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        <input type="text" class="form-control" value="{{ current_user.first_name }}">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
                         <h6 class="mb-0">Email</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="text" class="form-control" value="{{ currentUser }}">
+                        <input type="text" class="form-control" value="{{ current_user.id }}">
                     </div>
                 </div>
-                
+            </div>
+            
     <br />
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
