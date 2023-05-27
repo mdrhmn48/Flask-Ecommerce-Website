@@ -98,6 +98,34 @@ def sign_up():
 @auth.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    
+    if request.method == "POST":
+        email = request.form.get("email")
+        new_name = request.form.get("name")
+        new_email = request.form.get("new_email")
+        new_password1 = request.form.get("new_password1")
+        new_password2 = request.form.get("new_password2")
+
+        if new_email != current_user.id and new_email in user_dict:
+            flash("Email already exists!", category="error")
+        elif new_email != current_user.id and len(new_email) < 4:
+            flash("Email must be greater than 3 characters", category="error")
+        elif len(new_name) < 2:
+            flash("First name must be greater than 1 character", category="error")
+        elif new_password1 != new_password2:
+            flash("Passwords don't match", category="error")
+        elif len(new_password1) < 7:
+            flash("Password too short. Must be greater than 6 characters", category="error")
+        else:
+            update_customer_info(new_name, new_email, new_password1)
+            flash("Account updated successfully", category="success")
+            return redirect(url_for('auth.profile'))
+
     flash(f"{current_user.id} logged in successfully!", category="success")
     return render_template("profile.html", currentUser=current_user)
+
+
+def update_customer_info(new_name, new_email, new_password):
+    with my_connection.cursor(buffered=True) as db_cursor:
+        db_query = 'UPDATE customers SET first_name = %s, email = %s, customer_pass = %s WHERE customer_id = %s'
+        db_cursor.execute(db_query, (new_name, new_email, generate_password_hash(new_password), current_user.customer_id))
+        my_connection.commit()
