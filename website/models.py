@@ -18,20 +18,13 @@ def create_account():
         # print(create_user())
         
 def view_account():
-    while True:
-        view_account = input("Would you like to view your account? Y/N: ")
-        view_account = view_account.lower()
-        if(view_account[0] != "y"):
-            return
-        else:
-            break
-    while True:
         # db_cursor.execute("""select first_name from customers""")
         # first_name = db_cursor.fetchall()
         # first_name = [item for t in first_name for item in t]
         email=input("Which email/account would you like to view?: ")
-        db_cursor.execute("""select email from customers""")
+        db_cursor.execute("""select email, customer_id from customers""")
         email_db = db_cursor.fetchall()
+        customer_id = int(email_db[0][1])
         print(email_db)
         email_db = [item for t in email_db for item in t] 
         print(email_db)
@@ -42,19 +35,41 @@ def view_account():
         print(password_db)
           
         if email in email_db:
-            while True:
-                password= input("What is your password? ")
-                # if password in password_db:
-                if password in password_db:
-                        print(f"Your email: {email}")
-                        print("Thank you for shopping")  
-                        break
-                else:
-                    print("Wrong Password! Try Again")
+            password= input("What is your password? ")
+            # if password in password_db:
+            if password in password_db:
+                    print("\n------------------------------")
+                    print("\nSelect an option?")
+                    print("\nOption 1: View all order numbers")
+                    print("\nOption 2: View total purchase price of all orders")
+                    print("\nOption 3: View list of individual purchased products")
+                    print("\n------------------------------")
+                    
+                    choice = int(input("Please select an option: "))
+                    if choice == 1:
+                        print("\nList of all order numbers:")
+                        orders_list = view_all_orders(customer_id=customer_id)
+                        for i in orders_list:
+                            print(i)
+                    
+                    elif choice == 2:
+                        print("\nTotal Purchase Price of All Orders (in dollars):")
+                        purchase_price_list = view_total_purchase_amount(customer_id=customer_id)
+                        print(f"${purchase_price_list[0][0]}")
+
+                    elif choice == 3:
+                        print("\nList of purchased products:")
+                        purchased_products = view_purchased_products(customer_id=customer_id)
+                        product_list = map(lambda x: x[0], purchased_products)
+                        for i in product_list:
+                            print(i)
+                        # pass
+                    else:
+                        print("Thank you for visiting")
+            else:
+                print("Wrong Password! Try Again")
         else:
             print("Email do not exist!")
-
-                    
 
 def update_account():
     while True:
@@ -180,5 +195,6 @@ def buy():
         print(f"You have successfully purchased {product_selection}, quantity: {quantity_taken}, unit_price: {unit_price}")
     else:
         print("Account email does not exist")
+
 def review():
     pass

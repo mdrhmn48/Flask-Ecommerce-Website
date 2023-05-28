@@ -14,7 +14,7 @@ while True:
     print("\n------------------------------")
 
     
-    choice = int(input("Please select an option?" ))
+    choice = int(input("Please select an option? "))
     if choice == 1:
             store.create_account()
             # pass
