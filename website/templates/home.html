@@ -1,50 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %} Home {% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-<div align="center" class="container">
-    <h1 align="center"> Welcome to Market Mania</h1>
-    <h2 align="center">Customer Name: {{ current_user.first_name }}</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Product ID</th>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Category ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in result %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    <form method="POST">
-        <div class="form-group">
-            <label for="product">What do you like to Buy? Select a product.</label>
-            <input type="text" class="form-control" id="product" name="product" placeholder="Write a product" required>
+<div class="container">
+    <h1 class="text-center">Welcome to Market Mania</h1>
+    <h2 class="text-center">Customer Name: {{ current_user_email }}</h2>
+    
+    <form method="POST" action="{{ url_for('views.home') }}">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>In Stock</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in result %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>
+                        <input type="number" class="form-control quantity-input" id="quantity_{{ row[0] }}" name="quantity_{{ row[0] }}" placeholder="Quantity" min="0">
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <button type="submit" name="proceed" class="btn btn-primary btn-lg btn-block">Proceed to Checkout</button>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="quantity">Quantity</label>
-            <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Quantity" required>
-        </div>
-        <div class="form-group">
-          <label>Total Price:</label>
-          <div>{{ total_price }}</div>
-          
-      </div>
-        <input class="btn btn-primary" type="submit" value="Submit">
+        <br />
     </form>
-    <br />
 </div>
+
 {% endblock %}
+
+
+

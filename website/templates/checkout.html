@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center">Checkout</h1>
+    <h2 class="text-center">Customer Name: {{ current_user_email }}</h2>
+    
+    <h3>Products in Cart:</h3>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart_item in cart_items %}
+            <tr>
+                <td>{{ cart_item.product_name }}</td>
+                <td>{{ cart_item.quantity }}</td>
+                <td>${{ cart_item.price }}</td>
+                <td>${{ cart_item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h3 class="text-center text-success">Total Price: ${{ total_price }}</h3>
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" onclick="window.print()">Print</button>
+    </div>
+    <div class="text-center mt-4">
+        <a href="https://www.paypal.com" class="btn btn-success">Pay with PayPal</a>
+    </div>
+</div>
+
+{% endblock %}
