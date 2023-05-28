@@ -18,18 +18,18 @@ class User(UserMixin):
         self.first_name = first_name
         self.customer_id = customer_id
 
-
 @login_manager.user_loader
 def load_user(user_id):
     db_cursor = db_connection.cursor(buffered=True)
     db_cursor.execute("SELECT email, first_name, customer_id FROM customers WHERE email = %s", (user_id,))
     result = db_cursor.fetchone()
-    print("user_id: ", result[0], result[1], result[2])
     db_cursor.close()
-    if result:
+    if result is not None:
+        print("user_id:", result[0], result[1], result[2])
         return User(result[0], result[1], result[2])
     else:
         return None
+
 
 
 def create_app():

@@ -1,9 +1,10 @@
-{% extends "base.html" %} {% block title %} Profile {% endblock %}
+{% extends "base.html" %}
 
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-<form method = "POST">
-    <h3 align="center"> My Profile</h3>
+<form method="POST" action="{{ url_for('auth.profile') }}">
+    <h3 align="center">My Profile</h3>
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
@@ -12,7 +13,7 @@
                         <h6 class="mb-0">Customer ID</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="text" class="form-control" value="{{ current_user.customer_id }}">
+                        <input type="text" class="form-control" value="{{ current_user.customer_id }}" readonly>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -20,18 +21,25 @@
                         <h6 class="mb-0">Name</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="text" name = "name" class="form-control" value="{{ current_user.first_name }}">
+                        <input type="text" name="name" class="form-control" value="{{ current_user.first_name }}" required>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-sm-3">
-                        <h6 class="mb-0">Email</h6>
+                        <h6 class="mb-0">New Password</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                        <input type="text" class="form-control" value="{{ current_user.id }}">
+                        <input type="password" name="new_password1" class="form-control" minlength="7" required>
                     </div>
                 </div>
-                
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Confirm Password</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        <input type="password" name="new_password2" class="form-control" minlength="7" required>
+                    </div>
+                </div>
             </div>
             
     <br />
