@@ -13,7 +13,7 @@ def create_account():
             first_name = input("What is first name: ")
             email=input("What is your email?: ")
             password=input("What is your password?: ")
-            print(create_user(first_name, email, password))
+            create_user(first_name, email, password)
             print("Account created")
         # print(create_user())
         
@@ -22,17 +22,14 @@ def view_account():
         # first_name = db_cursor.fetchall()
         # first_name = [item for t in first_name for item in t]
         email=input("Which email/account would you like to view?: ")
-        db_cursor.execute("""select email, customer_id from customers""")
+        db_cursor.execute(f"""select email, customer_id from customers 
+                            where email = '{email}'""")
         email_db = db_cursor.fetchall()
-        customer_id = int(email_db[0][1])
-        print(email_db)
+        customer_id = int(email_db[-1][-1])
         email_db = [item for t in email_db for item in t] 
-        print(email_db)
         db_cursor.execute("""select customer_pass from customers""")
         password = db_cursor.fetchall()
-        print(password)
         password_db = [item for t in password for item in t]
-        print(password_db)
           
         if email in email_db:
             password= input("What is your password? ")
@@ -83,14 +80,10 @@ def update_account():
         email=input("Which email would you like to update?: ")
         db_cursor.execute("""select email from customers""")
         email_input = db_cursor.fetchall()
-        print(f"email_input: {email_input}")
         email_db = [item for t in email_input for item in t] 
-        print(f"email_db: {email_db}")
         db_cursor.execute("""select customer_pass from customers""")
         password = db_cursor.fetchall()
-        print(f"password = {password}")
         password_db = [item for t in password for item in t]
-        print(f"password_db = {password_db}")  
         if email in email_db:
             while True:
                 password= input("What is your passowrd? ")
@@ -135,14 +128,10 @@ def delete_account():
         email=input("Which email would you like to delete?: ")
         db_cursor.execute("""select email from customers""")
         email_db = db_cursor.fetchall()
-        print(email_db)
         email_db = [item for t in email_db for item in t] 
-        print(email_db)
         db_cursor.execute("""select customer_pass from customers""")
         password = db_cursor.fetchall()
-        print(password)
         password_db = [item for t in password for item in t]
-        print(password_db)  
         if email in email_db:
             while True:
                 password= input("What is your password? ")
@@ -162,15 +151,11 @@ def buy():
     email=input("Enter the email address for your account: ")
     db_cursor.execute(f"""select email from customers where email = '{email}'""")
     email_input = db_cursor.fetchall()
-    print(f"email_input: {email_input}")
     email_db = [item for t in email_input for item in t] 
-    print(f"email_db: {email_db}")
     password=input("Enter the password for your account: ")
     db_cursor.execute(f"""select customer_pass from customers where customer_pass = '{password}'""")
     password_input = db_cursor.fetchall()
-    print(f"password = {password_input}")
     password_db = [item for t in password_input for item in t]
-    print(f"password_db = {password_db}")
 
     if email in email_db:
         print("\n------------------------------")
@@ -192,7 +177,7 @@ def buy():
         product_price = db_cursor.fetchall()
         unit_price = float(product_price[0][0])
         buy_product(email=email, product_id=product_id, quantity_taken=quantity_taken, unit_price=unit_price)
-        print(f"You have successfully purchased {product_selection}, quantity: {quantity_taken}, unit_price: {unit_price}")
+        print(f"You have successfully purchased {product_selection}, quantity: {quantity_taken}, unit_price: ${unit_price}")
     else:
         print("Account email does not exist")
 
