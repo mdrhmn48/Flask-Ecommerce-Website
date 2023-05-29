@@ -4,22 +4,39 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="text-center">Welcome to Market Mania</h1>
-    <h2 class="text-center">Customer Name: {{ current_user_email }}</h2>
-    
+    <h1 class="text-center font-weight-bold mt-5">Welcome to Market Mania</h1>
+    <h2 class="text-center" style="color: rgb(187, 0, 255); font-size: 24px;">Customer Name: {{ current_user_email }}</h2>
+
+    <!-- Get sorting -->
+    <form method="GET" action="/">
+        <div class="form-group">
+            <label for="sort-by">Sort By:</label>
+            <select class="form-control" name="sort-by" id="sort-by">
+                <option value="id">Product ID</option>
+                <option value="name">Product Name</option>
+                <option value="quantity">Product Quantity</option>
+                <option value="price">Product Price</option>
+            </select>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+              <button type="submit" class="btn btn-success">Sort</button>
+            </div>
+          </div>
+    </form>
+  
     <form method="POST" action="{{ url_for('views.home') }}">
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
                     <th>Product ID</th>
                     <th>Product Name</th>
                     <th>In Stock</th>
                     <th>Price</th>
                     <th>Quantity</th>
-                   
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-center">
                 {% for row in result %}
                 <tr>
                     <td>{{ row[0] }}</td>
@@ -28,7 +45,6 @@
                     <td>{{ row[3] }}</td>
                     <td>
                         <input type="number" class="form-control quantity-input" id="quantity_{{ row[0] }}" name="quantity_{{ row[0] }}" placeholder="Quantity" min="0">
-
                     </td>
                 </tr>
                 {% endfor %}
@@ -45,6 +61,3 @@
 </div>
 
 {% endblock %}
-
-
-

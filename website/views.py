@@ -30,10 +30,27 @@ def home():
     current_user_email = current_user.first_name
     print("current_user_email: ", current_user_email)
 
+    sort_by = request.args.get("sort-by")
     with my_connection.cursor(buffered=True) as db_cursor:
-        db_cursor.execute("SELECT * FROM products")
-        result = db_cursor.fetchall()
-        print("result:----->", result)
+        result = fetch_products_sorted(sort_by, db_cursor)
+        print(result)
+    # sql_query = "SELECT * FROM Products ORDER BY "
+    # if sort_by == "id":
+    #     sql_query += "product_id"
+    # elif sort_by == "name":
+    #     sql_query += "product_name"
+    # elif sort_by == "quantity":
+    #     sql_query += "product_quantity"
+    # elif sort_by == "price":
+    #     sql_query += "product_price"
+    # else:
+    #     sql_query += "product_id"
+
+    # with my_connection.cursor(buffered=True) as db_cursor:
+    #     db_cursor.execute(sql_query)
+    #     result = db_cursor.fetchall()
+    #     print("result:----->", result)
+   
 
     if request.method == "POST":
         cart_items = []
@@ -89,6 +106,33 @@ def home():
             return redirect(url_for("views.checkout"))
 
     return render_template("home.html", current_user_email=current_user_email, result=result, total_price=0)
+
+def fetch_products_sorted(sort_by, db_cursor):
+    # Validate the sort_by value to prevent SQL injection
+    
+    # Define the default sort column
+    default_sort_column = "product_id"
+
+    # Map the sort_by value to the corresponding column name
+    column_mapping = {
+        "id": "product_id",
+        "name": "product_name",
+        "quantity": "product_quantity",
+        "price": "product_price"
+    }
+
+    # Get the column name based on the sort_by value, or use the default sort column if it's invalid
+    sort_column = column_mapping.get(sort_by, default_sort_column)
+
+    # Generate the SQL query
+    sql_query = f"SELECT * FROM Products ORDER BY {sort_column}"
+
+    # Execute the SQL query and fetch the results
+    db_cursor.execute(sql_query)
+    result = db_cursor.fetchall()
+    print("result: ----->", result)
+
+    return result
 
 
 

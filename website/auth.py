@@ -65,6 +65,9 @@ def login():
 @login_required
 def logout():
     session.pop('email', None)
+    session.pop('cart_items', None)
+    session.pop('total_price', None)
+    
     logout_user()
     return redirect(url_for("auth.login"))
 
