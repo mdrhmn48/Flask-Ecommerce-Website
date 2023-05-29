@@ -40,21 +40,25 @@ def get_product_categories():
         cat_list.append(row)
     return cat_list
 
-def buy_product(email, product_name, quantity_taken):
+def buy_product(email, product_id, quantity_taken, unit_price):
     if (not isinstance(email, str)):
         raise ValueError("Email is not a string")
-    if (not isinstance(product_name, str)):
-        raise ValueError("Product Name is not a string")
+    if (not isinstance(product_id, int)):
+        raise ValueError("Product ID is not a number")
     if (not isinstance(quantity_taken, int)):
         raise ValueError("Quantity is not a number")
+    total_purchase_amount = unit_price * quantity_taken
     stmt = f'''
-    INSERT INTO customer_products(customer_id, product_id)
+    INSERT INTO customer_products(customer_id, product_id, quantity_taken, total_purchase_amount)
     VALUES ((Select customer_id from Customers where email = "{email}"), 
-		(Select product_id from Products where product_name = "{product_name}"))
+		(Select product_id from Products where product_id = {product_id}),
+        ({quantity_taken}),
+        ({total_purchase_amount})
+        )
     '''
     db_cursor.execute(stmt)
     my_connection.commit()
-    update_quantity(quantity_taken, product_name)
+    update_quantity(quantity_taken, product_id)
 
 def create_user(first_name, email, password):
     if (not isinstance(first_name, str)):
@@ -107,12 +111,12 @@ def create_user_review(email, product, star_num):
     db_cursor.execute(stmt)
     my_connection.commit()
 
-def update_quantity(amount_taken, product):
+def update_quantity(amount_taken, product_id):
     if (not isinstance(amount_taken, int)):
         raise ValueError("The Amount Taken is not a int")
-    if (not isinstance(product, int)):
+    if (not isinstance(product_id, int)):
         raise ValueError("Product is not a string")
-    stmt = f'''Select Product_quantity from Products WHERE product_name = "{product}";'''
+    stmt = f'''Select Product_quantity from Products WHERE product_id = "{product_id}";'''
     db_cursor.execute(stmt)
     current = db_cursor.fetchall()[0][0]
     if (current < amount_taken):
@@ -121,30 +125,39 @@ def update_quantity(amount_taken, product):
     stmt = f'''
     UPDATE products
     SET product_quantity = product_quantity - {amount_taken}
-    WHERE product_name = "{product}";
+    WHERE product_id = "{product_id}";
     '''
     db_cursor.execute(stmt)
     my_connection.commit()
 
 # [0] = Product Name
 # [1] = Category Name / Price
-def get_all_products(order_by='category'):
-    if (not isinstance(order_by, str)):
-        raise ValueError("Order By is not a string")
-    if (order_by is not 'category' or order_by is not 'price'):
-        raise Exception("You can only order by category (default param) or price")
+def get_all_products(order_by='product_id'):
+    # if not isinstance(order_by, str):
+    #     raise ValueError("Order By is not a string")
+    # if order_by != 'category' or order_by != 'price':
+    #     raise Exception("You can only order by category (default param) or price")
     product_list = []
-    if (order_by == 'category'):
+    if (order_by == 'product_id'):
         stmt = f'''
-        SELECT product_name, category_name
+        SELECT product_id, product_name, category_name, product_price
         from products
         JOIN product_categories
             ON products.category_id = product_categories.category_id
-        ORDER BY category_name;
+        ORDER BY product_id;
+        '''
+
+    elif (order_by == 'category'):
+        stmt = f'''
+                SELECT product_id, product_name, category_name, product_price
+                from products
+                JOIN product_categories
+                    ON products.category_id = product_categories.category_id
+                ORDER BY category_name;
         '''
     elif (order_by == 'price'):
         stmt = f'''
-        SELECT product_name, product_price
+        SELECT product_name, product_price, category_name
         FROM products
         ORDER BY product_price DESC;
         '''
@@ -272,6 +285,50 @@ def custom_query(attributes: list):
                                 break
                     break
         break
+
+def view_all_orders(customer_id):
+    customer_id = customer_id
+    order_list = []
+    stmt = f'''
+            SELECT customer_products.order_id, products.product_name, customer_products.quantity_taken, 
+            customer_products.total_purchase_amount from customer_products
+            JOIN products ON customer_products.product_id = products.product_id
+            WHERE customer_id = "{customer_id}"
+            ORDER BY order_id;
+            '''
+    
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        order_list.append(row)
+    return result_set
+
+def view_total_purchase_amount(customer_id):
+    customer_id=customer_id
+    total_purchase_amount = []
+    stmt = f'''
+            SELECT ROUND(SUM(total_purchase_amount),2) from customer_products
+            WHERE customer_id = "{customer_id}";
+            '''
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        total_purchase_amount.append(row)
+    return result_set
+    
+def view_purchased_products(customer_id):
+    product_list = []
+    stmt = f"""
+            SELECT products.product_name from customer_products
+            JOIN products ON customer_products.product_id = products.product_id
+            WHERE customer_id = {customer_id}
+            ORDER BY order_id;
+            """
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        product_list.append(row)
+    return result_set
 
 if (__name__ == "__main__"):
     custom_query(["product_id", "product_name", "product_quantity", "product_price", "category_id"])
