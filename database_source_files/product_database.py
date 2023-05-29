@@ -211,6 +211,49 @@ def add_fruit(product_name, quantity, price, category):
     db_cursor.execute(stmt)
     my_connection.commit()
 
+def view_all_orders(customer_id):
+    customer_id = customer_id
+    order_list = []
+    stmt = f'''
+            SELECT customer_products.order_id, products.product_name, customer_products.quantity_taken, 
+            customer_products.total_purchase_amount from customer_products
+            JOIN products ON customer_products.product_id = products.product_id
+            WHERE customer_id = "{customer_id}"
+            ORDER BY order_id;
+            '''
+    
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        order_list.append(row)
+    return result_set
+
+def view_total_purchase_amount(customer_id):
+    customer_id=customer_id
+    total_purchase_amount = []
+    stmt = f'''
+            SELECT ROUND(SUM(total_purchase_amount),2) from customer_products
+            WHERE customer_id = "{customer_id}";
+            '''
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        total_purchase_amount.append(row)
+    return result_set
+    
+def view_purchased_products(customer_id):
+    product_list = []
+    stmt = f"""
+            SELECT products.product_name from customer_products
+            JOIN products ON customer_products.product_id = products.product_id
+            WHERE customer_id = {customer_id}
+            ORDER BY order_id;
+            """
+    db_cursor.execute(stmt)
+    result_set = db_cursor.fetchall()
+    for row in result_set:
+        product_list.append(row)
+    return result_set
 
 if (__name__ == "__main__"):
     print(get_all_products("Testing"))
