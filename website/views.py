@@ -14,16 +14,6 @@ views = Blueprint("views", __name__)
 
 
 
-
-
-
-
-
-
-
-
-
-
 @views.route("/", methods=["GET", "POST"])
 @login_required
 def home():
@@ -34,22 +24,7 @@ def home():
     with my_connection.cursor(buffered=True) as db_cursor:
         result = fetch_products_sorted(sort_by, db_cursor)
         print(result)
-    # sql_query = "SELECT * FROM Products ORDER BY "
-    # if sort_by == "id":
-    #     sql_query += "product_id"
-    # elif sort_by == "name":
-    #     sql_query += "product_name"
-    # elif sort_by == "quantity":
-    #     sql_query += "product_quantity"
-    # elif sort_by == "price":
-    #     sql_query += "product_price"
-    # else:
-    #     sql_query += "product_id"
-
-    # with my_connection.cursor(buffered=True) as db_cursor:
-    #     db_cursor.execute(sql_query)
-    #     result = db_cursor.fetchall()
-    #     print("result:----->", result)
+  
    
 
     if request.method == "POST":
