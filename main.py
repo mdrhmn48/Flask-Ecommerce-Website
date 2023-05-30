@@ -1,9 +1,8 @@
-from website import create_app
+from website.app import create_app
 from website import models as store
 from database_source_files import product_database as pdb
 
 app = create_app()
-
 while True:
     print("\nWelcome to Grocery Store!")
     print("\nSelect an option?")
@@ -17,21 +16,22 @@ while True:
 
     choice = int(input("Please select an option: "))
 
+
     if choice == 1:
             store.create_account()
-            pass
+
     elif choice == 2:
             store.view_account()
-            # pass
+          
     elif choice == 3:
             store.update_account()
-            pass
+           
     elif choice == 4:
             store.delete_account()
+        
     elif choice == 5:
             store.buy()
-            pass
-
+ 
     elif choice == 6:
             print("\nOption 1: Sort by price")
             print("\nOption 2: Sort by popularity")
@@ -59,9 +59,6 @@ while True:
             print("Thank you for visiting")
             break
 
-# store.create_account()
-#store.read_account()
-# store.delete_account()=
 
 if __name__== "__main__":
     app.run(debug=True)
