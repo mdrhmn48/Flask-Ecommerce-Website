@@ -18,6 +18,8 @@ views = Blueprint("views", __name__)
 @login_required
 def home():
     current_user_email = current_user.first_name
+    customer_id = current_user.customer_id
+    print("current_user_id: ", customer_id)
     print("current_user_email: ", current_user_email)
 
     sort_by = request.args.get("sort-by")
@@ -75,12 +77,13 @@ def home():
 
         if proceed_to_checkout:
             # Update the session with cart items and total price
+            session["customer_id"] = customer_id
             session["name"] = current_user_email
             session["cart_items"] = cart_items
             session["total_price"] = total_price
             return redirect(url_for("views.checkout"))
 
-    return render_template("home.html", current_user_email=current_user_email, result=result, total_price=0)
+    return render_template("home.html", customer_id=customer_id,current_user_email=current_user_email, result=result, total_price=0)
 
 def fetch_products_sorted(sort_by, db_cursor):
     # Validate the sort_by value to prevent SQL injection
@@ -115,40 +118,117 @@ def fetch_products_sorted(sort_by, db_cursor):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@views.route("/checkout", methods=["GET"])
+@views.route("/checkout", methods=["GET", "POST"])
 @login_required
 def checkout():
     current_user_email = session.get("name")
     cart_items = session.get("cart_items")
     total_price = session.get("total_price")
+    customer_id = session.get("customer_id")
 
-    #total_price = round(total_price, 2)
-    
-    # Clear the cart items and total price from the session
-    # session.pop("cart_items", None)
-    # session.pop("total_price", None)
-    
+    if request.method == "POST":
+        review_text = request.form.get("review_text")
+        if request.form.get("review") == "review":
+            with my_connection.cursor(buffered=True) as db_cursor:
+                db_query = "SELECT order_id FROM orders WHERE customer_id = %s"
+                db_cursor.execute(db_query, (customer_id,))
+                order_id = db_cursor.fetchone()[0]
+                session["order_id"] = order_id  # Set the order_id in the session
+                db_cursor.execute(
+                    "INSERT INTO Reviews (order_id, review_text) VALUES (%s, %s)",
+                    (order_id, review_text)
+                )
+                my_connection.commit()
+            flash("Review Added! Thanks for your feedback.", category="success")
+            return redirect(url_for("views.checkout"))
+
     if cart_items is not None:
-        return render_template("checkout.html", cart_items=cart_items, total_price=total_price, current_user_email=current_user_email)
+        if customer_id is not None:
+            # Insert the cart items into the Orders table
+            with my_connection.cursor(buffered=True) as db_cursor:
+                for cart_item in cart_items:
+                    db_cursor.execute(
+                        "INSERT INTO Orders (customer_id, product_name, quantity, price, total) VALUES (%s, %s, %s, %s, %s)",
+                        (customer_id, cart_item["product_name"], cart_item["quantity"], cart_item["price"], cart_item["total"])
+                    )
+                    # Retrieve the newly inserted order_id
+                    db_cursor.execute("SELECT LAST_INSERT_ID()")
+                    order_id = db_cursor.fetchone()[0]
+                    session["order_id"] = order_id  # Set the order_id in the session
+                my_connection.commit()
+
+            return render_template("checkout.html", cart_items=cart_items, total_price=total_price, current_user_email=current_user_email)
+        else:
+            # Handle the case when customer_id is None
+            flash("Customer ID is missing.", category="error")
+            return redirect(url_for("views.home"))
     else:
         # Handle the case when cart_items is None
         flash("Your cart is empty.", category="error")
         return redirect(url_for("views.home"))
 
+
+
+
+
+
+
+
+
+@views.route("/orders", methods=["GET", "POST"])
+@login_required
+def orders():
+    current_user_email = current_user.first_name
+    customer_id = current_user.customer_id
+
+    
+    with my_connection.cursor(buffered=True) as db_cursor:
+        db_query = "SELECT * FROM orders WHERE customer_id = %s"
+        db_cursor.execute(db_query, (customer_id,))
+        existing_orders = db_cursor.fetchall()
+        #return render_template("orders.html", existing_orders=existing_orders, current_user_email=current_user_email)
+        total_price = 0.0
+        for order in existing_orders:
+            total_price += float(order[5])
+
+        total_price = round(total_price, 2)
+    return render_template("orders.html",total_price= total_price, current_user_email=current_user_email, existing_orders=existing_orders)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@views.route("/reviews", methods=["GET", "POST"])
+@login_required
+def reviews():
+    current_user_email = session.get("name")
+    customer_id = session.get("customer_id")
+    order_id = session.get("order_id")
+
+    if order_id is not None:
+        with my_connection.cursor(buffered=True) as db_cursor:
+            db_cursor.execute(
+                "SELECT * FROM Reviews WHERE order_id IN (SELECT order_id FROM Orders WHERE customer_id = %s)",
+                (customer_id,)
+            )
+            all_reviews = db_cursor.fetchall()
+
+        return render_template("reviews.html", current_user_email=current_user_email, all_reviews=all_reviews)
+    else:
+        flash("Order ID is missing.", category="error")
+        return redirect(url_for("views.home"))
 
 
 

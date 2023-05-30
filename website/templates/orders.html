@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<h1 class="text-center font-weight-bold mt-5">Order History</h1>
+<h2 class="text-center" style="color: rgba(0, 4, 255, 0.945); font-size: 24px;">Customer Name: {{ current_user_email }}</h2>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped"">
+        <thead class="thead-dark">
+        <tr>
+          <th>Order ID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in existing_orders %}
+          <tr>
+            <td>{{ order[0] }}</td>
+            <td>{{ order[1] }}</td>
+            <td>{{ order[2] }}</td>
+            <td>{{ order[3] }}</td>
+            <td>{{ order[4] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <h3 class="text-center text-success">Total Price: ${{ total_price }}</h3>
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" onclick="window.print()">Print</button>
+    </div>
+    <br />
+</div>
+{% endblock %}

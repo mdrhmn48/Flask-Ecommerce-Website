@@ -10,7 +10,7 @@
     <h3>Products in Cart:</h3>
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
-            <tr>
+            <tr class="text-center">
                 <th>Product Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -30,12 +30,22 @@
     </table>
     
     <h3 class="text-center text-success">Total Price: ${{ total_price }}</h3>
-    <div class="text-center mt-4">
-        <button class="btn btn-primary" onclick="window.print()">Print</button>
+    <div class="row">
+        <div class="col-md-4 text-center mt-4">
+          <button class="btn btn-primary" onclick="window.print()">Print</button>
+        </div>
+        <div class="col-md-4 text-center mt-4">
+            <button class="btn btn-primary" name="review" data-toggle="collapse" data-target="#reviewForm">Leave A Review</button>
+        </div>
+        <div class="col-md-4 text-center mt-4">
+            <a href="https://www.paypal.com" class="btn btn-success">Pay with PayPal</a>
+        </div>
     </div>
-    <div class="text-center mt-4">
-        <a href="https://www.paypal.com" class="btn btn-success">Pay with PayPal</a>
+    <div class="collapse mt-3" id="reviewForm">
+        <form method="POST" action="{{ url_for('views.checkout') }}">
+            <textarea name="review_text" class="form-control" placeholder="Write your review here" required></textarea>
+            <button type="submit" name="review" value="review" class="btn btn-primary mt-3">Submit Review</button>
+        </form>
     </div>
 </div>
-
 {% endblock %}
