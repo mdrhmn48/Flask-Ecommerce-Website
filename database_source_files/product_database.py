@@ -9,7 +9,6 @@ my_connection = connector.connect(
 
 db_cursor = my_connection.cursor()
 
-
 def get_products(category):
     if (not isinstance(category, str)):
         raise ValueError("Category is not a string")
@@ -199,66 +198,66 @@ def add_fruit(product_name, quantity, price, category):
     my_connection.commit()
 
 # Sorts items by price
-def sort_by_price(cur = db_cursor):
-    sql = """SELECT * FROM Products ORDER BY product_price"""
+def sort_by_price():
+    sql = """SELECT product_name, product_price FROM Products ORDER BY product_price"""
     db_cursor.execute(sql)
     price_db = db_cursor.fetchall()
     print(price_db)
 
-# Sorts/queries items by category
-def sort_by_category(cur = db_cursor):
-    sql = """SELECT * FROM Products ORDER BY category_id"""
+# Sorts items by category
+def sort_by_category():
+    sql = """SELECT p.product_name, pc.category_name FROM Product_categories pc JOIN Products p on pc.category_id = p.category_id ORDER BY category_name"""
     db_cursor.execute(sql)
     category_db = db_cursor.fetchall()
     print(category_db)
 
 # Sorts items by popularity
-def sort_by_popularity(cur = db_cursor):
-    sql = """SELECT p.product_name, pr.num_stars, p.product_price FROM Product_reviews pr JOIN Products p on pr.product_id = p.product_id ORDER BY num_stars DESC"""
+def sort_by_popularity():
+    sql = """SELECT p.product_name, pr.num_stars FROM Product_reviews pr JOIN Products p on pr.product_id = p.product_id ORDER BY num_stars DESC"""
     db_cursor.execute(sql)
     pop_db = db_cursor.fetchall()
     print(pop_db)
 
 # Custom queries/sorts
 def custom_query(attributes: list):
-    while(True):
+    while(True): # reruns until you make a select statement
         custom_query = input(f"Type 1 to sort values by an attribute or 2 to search with a conditional statement: ")
-        if custom_query not in ("1", "2"):
+        if custom_query not in ("1", "2"): # makes sure input is 1 or 2
             print("Please type 1 or 2.")
-        elif custom_query == "1":
+        elif custom_query == "1": # decide to sort by attribute
             while(True):
                 attribute = input(f"What attribute do you want to sort by? Choose from this list: ({attributes})\n")
-                if attribute not in attributes:
+                if attribute not in attributes: # makes sure attribute is in attribute list
                     print("That attribute is not in the table!")
                 else:
                     while(True):
                         asc = input("Type 1 to sort in ascending order or 2 to sort in descending order: ")
-                        if asc not in ("1", "2"):
+                        if asc not in ("1", "2"): # makes sure input is 1 or 2
                             print("Please type 1 or 2.")
-                        elif asc == "1":
+                        elif asc == "1": # sort products by attribute in ascending order
                             sql = f"SELECT * FROM Products ORDER BY {attribute}"
                             db_cursor.execute(sql)
                             cust_db = db_cursor.fetchall()
                             print(cust_db)
                             break
-                        elif asc == "2":
+                        elif asc == "2": # sort products by attribute in descending order
                             sql = f"SELECT * FROM Products ORDER BY {attribute} DESC"
                             db_cursor.execute(sql)
                             cust_db = db_cursor.fetchall()
                             print(cust_db)
                             break
                     break
-        elif custom_query == "2":
+        elif custom_query == "2": # decide to sort with a conditional statement
             while(True):
                 attribute = input(f"What attribute do you want to set a condition for? Choose from this list: ({attributes})\n")
-                if attribute not in attributes:
+                if attribute not in attributes: # makes sure attribute is in attribute list
                     print("That attribute is not in the table!")
                 else:
                     while True:
                         op = input("What operator (>, <, or =) do you want to use: ")
-                        if op not in (">", "<", "="):
-                            print("Please type either a '>', '<', or '=' character.")
-                        elif op in (">", "<", "="):
+                        if op not in (">", "<", "=", "!="): # makes sure operator is >, <, =, or !=
+                            print("Please type either a '>', '<', '=', or '!=' character.")
+                        elif op in (">", "<", "=", "!="): # gets value to compare against
                             value = input(f"Enter a value (Put strings in quotes). Only products where {attribute} is {op} the value will be shown: ")
                             try:
                                 sql = f"SELECT * FROM Products WHERE {attribute} {op} {value}"
